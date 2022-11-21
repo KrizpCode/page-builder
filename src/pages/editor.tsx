@@ -1,22 +1,33 @@
+import SiteForm from "@components/editor/SiteForm";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import React from "react";
 import { trpc } from "../utils/trpc";
 
 const Editor = () => {
   const { data: sessionData, status } = useSession();
-  const { data: siteData, isLoading } = trpc.site.getByUserId.useQuery(
-    sessionData?.user?.id || ""
-  );
-  console.log("🚀 ~ file: editor.tsx ~ line 9 ~ Editor ~ siteData", siteData);
+  const { data: siteData, isLoading } = trpc.site.getSite.useQuery();
+  const router = useRouter();
 
   if (status === "loading" || isLoading) {
     return <>Loading...</>;
   }
 
+  if (!sessionData) {
+    router.push("/");
+  }
+
+  if (!siteData) {
+    return <SiteForm />;
+  }
+
   return (
-    <div>
+    <div className="h-screen w-screen">
       <p>Editor</p>
-      {!siteData && <p>You have no site created yet</p>}
+      <p>Site Name: {siteData.name}</p>
+      {siteData.pages.map((page) => (
+        <p key={page.id}>Page Name: {page.name}</p>
+      ))}
     </div>
   );
 };
