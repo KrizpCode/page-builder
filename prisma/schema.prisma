@@ -14,10 +14,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Example {
+model Site {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  name      String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  page      Page[]
+  pageId    String
+
+  @@unique([userId])
+}
+
+model Page {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
+  siteId    String
+  pageId    String?
+
+  @@unique([siteId])
 }
 
 // Necessary for Next auth
@@ -55,6 +74,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  site          Site?
 }
 
 model VerificationToken {
