@@ -21,8 +21,7 @@ model Site {
   name      String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String
-  page      Page[]
-  pageId    String
+  pages     Page[]
 
   @@unique([userId])
 }
@@ -34,7 +33,6 @@ model Page {
   name      String
   site      Site     @relation(fields: [siteId], references: [id], onDelete: Cascade)
   siteId    String
-  pageId    String?
 
   @@unique([siteId])
 }
